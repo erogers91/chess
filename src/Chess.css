@@ -72,15 +72,14 @@
 .captured-pieces {
   margin-top: 20px;
   display: flex;
-  flex-direction: row; /* Set flex-direction to row */
   justify-content: center;
   align-items: center;
   font-size: 18px;
   font-weight: bold;
-  background-color: #f9f9f9; /* Add background color */
-  border: 1px solid #ccc; /* Add border */
-  padding: 10px; /* Add padding */
-  border-radius: 5px; /* Add border radius */
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
 }
 
 .captured-pieces span {
@@ -94,8 +93,8 @@
 
 .captured-pieces-container {
   display: flex;
-  justify-content: center;
   flex-wrap: wrap; /* Allow flex items to wrap */
+  justify-content: center;
 }
 
 .captured-piece {
