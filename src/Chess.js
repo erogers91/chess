@@ -3,19 +3,22 @@ import './Chess.css';
 import { isWhitePiece, isBlackPiece } from './helper_functions/chessUtils';
 
 const Chess = () => {
-  const [isWhiteTurn, setIsWhiteTurn] = useState(true);
-  const [sourceSquare, setSourceSquare] = useState(null);
-  const [validMoveSquares, setValidMoveSquares] = useState([]);
-  const [board, setBoard] = useState([
-    ['♜', '♞', '♝', '♛', '♚', '♝', '♞', '♜'],
-    ['♟', '♟', '♟', '♟', '♟', '♟', '♟', '♟'],
-    ['', '', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', '', ''],
-    ['♙', '♙', '♙', '♙', '♙', '♙', '♙', '♙'],
-    ['♖', '♘', '♗', '♕', '♔', '♗', '♘', '♖'],
-  ]);
+    const [board, setBoard] = useState([
+      ['♜', '♞', '♝', '♛', '♚', '♝', '♞', '♜'],
+      ['♟', '♟', '♟', '♟', '♟', '♟', '♟', '♟'],
+      ['', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', ''],
+      ['♙', '♙', '♙', '♙', '♙', '♙', '♙', '♙'],
+      ['♖', '♘', '♗', '♕', '♔', '♗', '♘', '♖'],
+    ]);
+  
+    const [isWhiteTurn, setIsWhiteTurn] = useState(true);
+    const [sourceSquare, setSourceSquare] = useState(null);
+    const [validMoveSquares, setValidMoveSquares] = useState([]);
+    const [capturedPieces, setCapturedPieces] = useState([]);
+  
 
   const isMoveValid = (piece, sourceRow, sourceCol, targetRow, targetCol) => {
     // Perform move validation based on the piece type and the source and target positions
@@ -137,8 +140,12 @@ const Chess = () => {
   const handleSquareClick = (row, col) => {
     const piece = board[row][col];
 
-    if ((isWhiteTurn && isWhitePiece(piece)) || (!isWhiteTurn && isBlackPiece(piece))) {
-      // Selected a piece of the player's turn color
+    if (!sourceSquare && isWhiteTurn && isWhitePiece(piece)) {
+      // Select a white piece
+      setSourceSquare({ row, col });
+      setValidMoveSquares(findValidMoveSquares(piece, row, col));
+    } else if (!sourceSquare && !isWhiteTurn && isBlackPiece(piece)) {
+      // Select a black piece
       setSourceSquare({ row, col });
       setValidMoveSquares(findValidMoveSquares(piece, row, col));
     } else if (validMoveSquares.includes(`${row}-${col}`)) {
@@ -147,6 +154,7 @@ const Chess = () => {
       const [sourceRow, sourceCol] = [sourceSquare.row, sourceSquare.col];
 
       // Move the piece to the target square
+      const targetPiece = newBoard[row][col];
       newBoard[row][col] = newBoard[sourceRow][sourceCol];
       newBoard[sourceRow][sourceCol] = '';
 
@@ -154,6 +162,11 @@ const Chess = () => {
       setIsWhiteTurn(!isWhiteTurn);
       setSourceSquare(null);
       setValidMoveSquares([]);
+
+      // Capture the target piece if it exists
+      if (targetPiece) {
+        setCapturedPieces((prevCapturedPieces) => [...prevCapturedPieces, targetPiece]);
+      }
     } else {
       // Invalid move, clear the selection
       setSourceSquare(null);
@@ -227,7 +240,48 @@ const Chess = () => {
     return rows;
   };
 
-  return <div className="chessboard">{renderBoard()}</div>;
+  const renderCapturedPieces = () => {
+    const whitePieces = capturedPieces.filter(isWhitePiece);
+    const blackPieces = capturedPieces.filter(isBlackPiece);
+  
+    return (
+      <div className="captured-pieces-container">
+        <div className="captured-pieces-section">
+          <span className="captured-pieces-label">Captured White Pieces:</span>
+
+          {whitePieces.map((piece, index) => (
+            <div key={index} className={`captured-piece piece-white`}>
+              {piece}
+            </div>
+          ))}
+        </div>
+        <div class="divider"></div>
+        <div className="captured-pieces-section">
+          <span className="captured-pieces-label">Captured Black Pieces:</span>
+          
+
+          {blackPieces.map((piece, index) => (
+            <div key={index} className={`captured-piece piece-black`}>
+              {piece}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      <div className="turn-indicator">
+        {isWhiteTurn ? 'White Turn' : 'Black Turn'}
+      <div className="chessboard">{renderBoard()}</div>
+      <div className="captured-pieces">
+      {renderCapturedPieces()}
+    </div>
+    </div>
+    </div>
+  );
+  
 };
 
 export default Chess;
