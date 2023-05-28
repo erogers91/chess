@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import './Chess.css';
+import { isWhitePiece, isBlackPiece } from './helper_functions/chessUtils';
 
 const Chess = () => {
   const [isWhiteTurn, setIsWhiteTurn] = useState(true);
   const [sourceSquare, setSourceSquare] = useState(null);
+  const [validMoveSquares, setValidMoveSquares] = useState([]);
   const [board, setBoard] = useState([
     ['♜', '♞', '♝', '♛', '♚', '♝', '♞', '♜'],
     ['♟', '♟', '♟', '♟', '♟', '♟', '♟', '♟'],
@@ -15,32 +17,22 @@ const Chess = () => {
     ['♖', '♘', '♗', '♕', '♔', '♗', '♘', '♖'],
   ]);
 
-  const isWhitePiece = (piece) => {
-    const whitePieces = ['♙', '♖', '♘', '♗', '♕', '♔'];
-    return whitePieces.includes(piece);
-  };
-
-  const isBlackPiece = (piece) => {
-    const blackPieces = ['♟', '♜', '♞', '♝', '♛', '♚'];
-    return blackPieces.includes(piece);
-  };
-
   const isMoveValid = (piece, sourceRow, sourceCol, targetRow, targetCol) => {
     // Perform move validation based on the piece type and the source and target positions
     // Return true if the move is valid, and false otherwise
-    
+
     const targetPiece = board[targetRow][targetCol];
-  
-    // Invalid move because the target piece and the source piece are the sane color
+
+    // Invalid move because the target piece and the source piece are the same color
     if ((isWhiteTurn && isWhitePiece(targetPiece)) || (!isWhiteTurn && isBlackPiece(targetPiece))) {
-      return false; 
+      return false;
     }
 
     // Pawns
     if (piece === '♙' || piece === '♟') {
       const rowDiff = targetRow - sourceRow;
       const colDiff = Math.abs(targetCol - sourceCol);
-  
+
       if (piece === '♙') {
         // White pawn moves
         if (rowDiff === -1 && colDiff === 0 && board[targetRow][targetCol] === '') {
@@ -61,92 +53,52 @@ const Chess = () => {
         }
       }
     }
-  
     // Rooks
     if (piece === '♖' || piece === '♜') {
       const rowDiff = targetRow - sourceRow;
       const colDiff = targetCol - sourceCol;
 
-      if (rowDiff === 0 || colDiff === 0) {
-        // Check for obstructing pieces along the horizontal or vertical path
-        const stepRow = rowDiff === 0 ? 0 : rowDiff > 0 ? 1 : -1;
-        const stepCol = colDiff === 0 ? 0 : colDiff > 0 ? 1 : -1;
-
-        let currentRow = sourceRow + stepRow;
-        let currentCol = sourceCol + stepCol;
-
-        while (currentRow !== targetRow || currentCol !== targetCol) {
-          if (board[currentRow][currentCol] !== '') {
-            return false; // Obstructed path
-          }
-          currentRow += stepRow;
-          currentCol += stepCol;
+      if ((rowDiff === 0 && Math.abs(colDiff) >= 1) || (colDiff === 0 && Math.abs(rowDiff) >= 1)) {
+        if (isPathClear(sourceRow, sourceCol, targetRow, targetCol)) {
+          return true; // Move along a straight line
         }
-
-        return true; // Move horizontally or vertically
       }
     }
-  
     // Knights
     if (piece === '♘' || piece === '♞') {
       const rowDiff = Math.abs(targetRow - sourceRow);
       const colDiff = Math.abs(targetCol - sourceCol);
-  
+
       if ((rowDiff === 2 && colDiff === 1) || (rowDiff === 1 && colDiff === 2)) {
         return true; // Move in an L-shape
       }
     }
-  
     // Bishops
     if (piece === '♗' || piece === '♝') {
       const rowDiff = targetRow - sourceRow;
       const colDiff = targetCol - sourceCol;
 
       if (Math.abs(rowDiff) === Math.abs(colDiff)) {
-        // Check for obstructing pieces along the diagonal path
-        const stepRow = rowDiff > 0 ? 1 : -1;
-        const stepCol = colDiff > 0 ? 1 : -1;
-
-        let currentRow = sourceRow + stepRow;
-        let currentCol = sourceCol + stepCol;
-
-        while (currentRow !== targetRow || currentCol !== targetCol) {
-          if (board[currentRow][currentCol] !== '') {
-            return false; // Obstructed path
-          }
-          currentRow += stepRow;
-          currentCol += stepCol;
+        if (isPathClear(sourceRow, sourceCol, targetRow, targetCol)) {
+          return true; // Move along a diagonal line
         }
-
-        return true; // Move diagonally
       }
     }
-  
     // Queens
     if (piece === '♕' || piece === '♛') {
       const rowDiff = targetRow - sourceRow;
       const colDiff = targetCol - sourceCol;
 
-      if (rowDiff === 0 || colDiff === 0 || Math.abs(rowDiff) === Math.abs(colDiff)) {
-        // Check for obstructing pieces along the horizontal, vertical, or diagonal path
-        const stepRow = rowDiff === 0 ? 0 : rowDiff > 0 ? 1 : -1;
-        const stepCol = colDiff === 0 ? 0 : colDiff > 0 ? 1 : -1;
-
-        let currentRow = sourceRow + stepRow;
-        let currentCol = sourceCol + stepCol;
-
-        while (currentRow !== targetRow || currentCol !== targetCol) {
-          if (board[currentRow][currentCol] !== '') {
-            return false; // Obstructed path
-          }
-          currentRow += stepRow;
-          currentCol += stepCol;
+      if (
+        (rowDiff === 0 && Math.abs(colDiff) >= 1) ||
+        (colDiff === 0 && Math.abs(rowDiff) >= 1) ||
+        Math.abs(rowDiff) === Math.abs(colDiff)
+      ) {
+        if (isPathClear(sourceRow, sourceCol, targetRow, targetCol)) {
+          return true; // Move along a straight or diagonal line
         }
-
-        return true; // Move horizontally, vertically, or diagonally
       }
     }
-  
     // Kings
     if (piece === '♔' || piece === '♚') {
       const rowDiff = Math.abs(targetRow - sourceRow);
@@ -157,90 +109,125 @@ const Chess = () => {
       }
     }
 
-    // If none of the conditions match, the move is invalid
-    return false;
-};
+    return false; // Invalid move
+  };
 
-  const handleMove = (targetSquare) => {
-    if (sourceSquare) {
-      const { row: sourceRow, col: sourceCol } = sourceSquare;
-      const { row: targetRow, col: targetCol } = targetSquare;
-  
-      // Perform move validation and logic
-      const pieceAtSource = board[sourceRow][sourceCol];
-      const pieceAtTarget = board[targetRow][targetCol];
-  
-      // Check if it is the turn of the player to move their pieces
-      if ((isWhiteTurn && isWhitePiece(pieceAtSource)) || (!isWhiteTurn && isBlackPiece(pieceAtSource))) {
-        // Validate the move based on the piece type and the source and target positions
-        if (isMoveValid(pieceAtSource, sourceRow, sourceCol, targetRow, targetCol)) {
-          // Move is valid, update the board state
-          const updatedBoard = [...board];
-          updatedBoard[targetRow][targetCol] = pieceAtSource;
-          updatedBoard[sourceRow][sourceCol] = '';
-  
-          setBoard(updatedBoard);
-  
-          // Switch the turn to the opposite player
-          setIsWhiteTurn((prevState) => !prevState);
-        } else {
-          // Invalid move for the specific piece type
-          // Handle the invalid move accordingly
-        }
+  const isPathClear = (sourceRow, sourceCol, targetRow, targetCol) => {
+    // Check if the path between the source and target positions is clear
+    // Return true if the path is clear, and false otherwise
+
+    const rowDiff = targetRow - sourceRow;
+    const colDiff = targetCol - sourceCol;
+    const rowStep = rowDiff === 0 ? 0 : rowDiff / Math.abs(rowDiff);
+    const colStep = colDiff === 0 ? 0 : colDiff / Math.abs(colDiff);
+    let currentRow = sourceRow + rowStep;
+    let currentCol = sourceCol + colStep;
+
+    while (currentRow !== targetRow || currentCol !== targetCol) {
+      if (board[currentRow][currentCol] !== '') {
+        return false; // Path is blocked by another piece
       }
-  
-      // Reset the sourceSquare after the move is made
+      currentRow += rowStep;
+      currentCol += colStep;
+    }
+
+    return true; // Path is clear
+  };
+
+  const handleSquareClick = (row, col) => {
+    const piece = board[row][col];
+
+    if ((isWhiteTurn && isWhitePiece(piece)) || (!isWhiteTurn && isBlackPiece(piece))) {
+      // Selected a piece of the player's turn color
+      setSourceSquare({ row, col });
+      setValidMoveSquares(findValidMoveSquares(piece, row, col));
+    } else if (validMoveSquares.includes(`${row}-${col}`)) {
+      // Selected a valid move square
+      const newBoard = [...board];
+      const [sourceRow, sourceCol] = [sourceSquare.row, sourceSquare.col];
+
+      // Move the piece to the target square
+      newBoard[row][col] = newBoard[sourceRow][sourceCol];
+      newBoard[sourceRow][sourceCol] = '';
+
+      setBoard(newBoard);
+      setIsWhiteTurn(!isWhiteTurn);
       setSourceSquare(null);
+      setValidMoveSquares([]);
     } else {
-      // Set the clicked square as the sourceSquare if it contains a piece
-      if (board[targetSquare.row][targetSquare.col] !== '') {
-        setSourceSquare(targetSquare);
-      }
+      // Invalid move, clear the selection
+      setSourceSquare(null);
+      setValidMoveSquares([]);
     }
   };
 
-  return (
-    <div className="chessboard">
-      <div className="turn-indicator">
-        {isWhiteTurn ? "White's Turn" : "Black's Turn"}
-      </div>
-      {board.map((row, rowIndex) => (
-        <div key={rowIndex} className="row">
-          {row.map((piece, columnIndex) => {
-            const square = { row: rowIndex, col: columnIndex };
-            const isSelected =
-              sourceSquare &&
-              sourceSquare.row === rowIndex &&
-              sourceSquare.col === columnIndex;
-            const isValidMove =
-              isSelected &&
-              isMoveValid(
-                board[sourceSquare.row][sourceSquare.col],
-                sourceSquare.row,
-                sourceSquare.col,
-                rowIndex,
-                columnIndex
-              );
-            const classNames = `square ${
-              (rowIndex + columnIndex) % 2 === 0 ? 'light-square' : 'dark-square'
-            }${isSelected ? ' selected' : ''}${
-              isValidMove ? ' valid-move' : ''
-            }`;
+  const findValidMoveSquares = (piece, row, col) => {
+    // Find all the valid move squares for the selected piece at the given position
+    const validMoves = [];
 
-            return (
-              <div
-                key={columnIndex}
-                className={classNames}
-                onClick={() => handleMove(square)}
-              >
-                {piece && <div className="piece">{piece}</div>}
-              </div>
-            );
-          })}
+    for (let i = 0; i < 8; i++) {
+      for (let j = 0; j < 8; j++) {
+        if (isMoveValid(piece, row, col, i, j)) {
+          validMoves.push(`${i}-${j}`);
+        }
+      }
+    }
+
+    return validMoves;
+  };
+
+  const renderSquare = (row, col) => {
+    const piece = board[row][col];
+    const isSquareSelected = sourceSquare && sourceSquare.row === row && sourceSquare.col === col;
+    const isValidMoveSquare = validMoveSquares.includes(`${row}-${col}`);
+    const squareClasses = ['square'];
+
+    if (isSquareSelected) {
+      squareClasses.push('selected');
+    }
+
+    if (isValidMoveSquare) {
+      squareClasses.push('valid-move');
+    }
+
+    if ((row + col) % 2 === 0) {
+      squareClasses.push('light-square');
+    } else {
+      squareClasses.push('dark-square');
+    }
+
+    return (
+      <div
+        key={`${row}-${col}`}
+        className={squareClasses.join(' ')}
+        onClick={() => handleSquareClick(row, col)}
+      >
+        <span className={`piece ${isWhitePiece(piece) ? 'piece-white' : 'piece-black'}`}>{piece}</span>
+      </div>
+    );
+  };
+
+  const renderBoard = () => {
+    const rows = [];
+
+    for (let row = 0; row < 8; row++) {
+      const squares = [];
+
+      for (let col = 0; col < 8; col++) {
+        squares.push(renderSquare(row, col));
+      }
+
+      rows.push(
+        <div key={row} className="row">
+          {squares}
         </div>
-      ))}
-    </div>
-  );
+      );
+    }
+
+    return rows;
+  };
+
+  return <div className="chessboard">{renderBoard()}</div>;
 };
 
 export default Chess;
