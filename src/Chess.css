@@ -93,8 +93,13 @@
 
 .captured-pieces-container {
   display: flex;
-  flex-wrap: wrap; /* Allow flex items to wrap */
   justify-content: center;
+}
+
+.captured-pieces-section {
+  display: flex;
+  flex-direction: column; /* Display the captured pieces in a column */
+  align-items: center;
 }
 
 .captured-piece {
@@ -124,3 +129,4 @@
   background-color: red;
   margin: 0 10px;
 }
+

@@ -255,7 +255,7 @@ const Chess = () => {
             </div>
           ))}
         </div>
-        <div class="divider"></div>
+        <div className="divider"></div>
         <div className="captured-pieces-section">
           <span className="captured-pieces-label">Captured Black Pieces:</span>
           
