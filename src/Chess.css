@@ -1,4 +1,8 @@
 /* Chessboard Layout CSS */
+html{
+  /* background-color: black; */
+}
+
 .chessboard {
   display: flex;
   flex-wrap: wrap;
@@ -89,6 +93,7 @@
 .captured-pieces-label {
   font-weight: bold;
   margin-bottom: 5px;
+  color: black;
 }
 
 .captured-pieces-container {
@@ -98,8 +103,10 @@
 
 .captured-pieces-section {
   display: flex;
-  flex-direction: column; /* Display the captured pieces in a column */
+  flex-wrap: wrap;
+  flex-direction: row; /* Display the captured pieces in a column */
   align-items: center;
+  max-width: 31vw;
 }
 
 .captured-piece {
@@ -114,19 +121,21 @@
 }
 
 .captured-piece.piece-white {
+  min-width: 4vw;
   color: #f9f9f9;
   background-color: #000;
 }
 
 .captured-piece.piece-black {
+  min-width: 4vw;
   color: #000;
   background-color: #f9f9f9;
 }
 
 .divider {
   height: auto;
-  width: 1px;
-  background-color: red;
-  margin: 0 10px;
+  width: 5px;
+  background-color: rgb(143, 143, 143);
+  margin: -10px 10px;
 }
 

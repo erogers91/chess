@@ -246,26 +246,31 @@ const Chess = () => {
   
     return (
       <div className="captured-pieces-container">
-        <div className="captured-pieces-section">
-          <span className="captured-pieces-label">Captured White Pieces:</span>
 
-          {whitePieces.map((piece, index) => (
-            <div key={index} className={`captured-piece piece-white`}>
-              {piece}
-            </div>
-          ))}
+        <div>
+        <span className="captured-pieces-label">Captured White Pieces:</span>
+          <div className="captured-pieces-section">
+            {whitePieces.map((piece, index) => (
+              <div key={index} className={`captured-piece piece-white`}>
+                {piece}
+              </div>
+            ))}
+          </div>
         </div>
+
         <div className="divider"></div>
-        <div className="captured-pieces-section">
-          <span className="captured-pieces-label">Captured Black Pieces:</span>
-          
 
-          {blackPieces.map((piece, index) => (
-            <div key={index} className={`captured-piece piece-black`}>
-              {piece}
-            </div>
-          ))}
+        <div>
+        <span className="captured-pieces-label">Captured Black Pieces:</span>
+          <div className="captured-pieces-section">
+            {blackPieces.map((piece, index) => (
+              <div key={index} className={`captured-piece piece-black`}>
+                {piece}
+              </div>
+            ))}
+          </div>
         </div>
+
       </div>
     );
   };
