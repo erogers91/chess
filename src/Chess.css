@@ -1,5 +1,5 @@
 /* Chessboard Layout CSS */
-html{
+html {
   /* background-color: black; */
 }
 
@@ -7,10 +7,16 @@ html{
   display: flex;
   flex-wrap: wrap;
   width: 400px;
-  height: 400px;
+  max-width: 100%;
+  min-width: 100%;
+  height: auto;
+  max-width: 100%;
+  min-width: 100%;
   border: 1px solid #000;
   background-color: #f0d9b5;
   position: relative;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
 }
 
 .row {
@@ -28,33 +34,42 @@ html{
   width: 50px;
   height: 50px;
   box-sizing: border-box;
-  border: 1px solid transparent;
+  border: 1px solid #837575;
+  transition: transform 0.3s, border 0.3s;
 }
 
 .square:hover {
   transform: scale(1.1);
   border: 2px solid green;
+  box-shadow: 0px 0px 10px rgba(0, 255, 0, 0.5);
 }
 
 .selected {
-  border: 2px solid blue;
+  transform: scale(1.1);
+  border: 2px solid red;
+  box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.5);
 }
 
 .valid-move {
-  background-color: lightgreen;
+  color: lightgreen;
 }
 
 .light-square {
   background-color: #f0d9b5;
+  background-image: radial-gradient(#f0d9b5 50%, transparent 100%);
+  background-size: 50px 50px;
 }
 
 .dark-square {
   background-color: #b58863;
+  background-image: radial-gradient(#b58863 50%, transparent 100%);
+  background-size: 50px 50px;
 }
 
 .piece {
   color: #000;
   font-weight: bold;
+  transition: color 0.3s;
 }
 
 .piece-white {
@@ -84,6 +99,7 @@ html{
   border: 1px solid #ccc;
   padding: 10px;
   border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
 }
 
 .captured-pieces span {
@@ -104,9 +120,10 @@ html{
 .captured-pieces-section {
   display: flex;
   flex-wrap: wrap;
-  flex-direction: row; /* Display the captured pieces in a column */
+  flex-direction: row;
+  /* Display the captured pieces in a column */
   align-items: center;
-  max-width: 31vw;
+  width: 200px;
 }
 
 .captured-piece {
@@ -121,13 +138,11 @@ html{
 }
 
 .captured-piece.piece-white {
-  min-width: 4vw;
   color: #f9f9f9;
   background-color: #000;
 }
 
 .captured-piece.piece-black {
-  min-width: 4vw;
   color: #000;
   background-color: #f9f9f9;
 }
@@ -138,4 +153,3 @@ html{
   background-color: rgb(143, 143, 143);
   margin: -10px 10px;
 }
-
