@@ -104,7 +104,6 @@ html {
   font-size: 18px;
   font-weight: bold;
   background-color: #f9f9f9;
-  padding: 5px 10px;
   border-radius: 3px;
 }
 
@@ -112,7 +111,7 @@ html {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: bold;
   margin-top: 20px;
   background-color: #fff;
@@ -135,7 +134,7 @@ html {
 .captured-pieces-container {
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
   gap: 5px;
 }
 
