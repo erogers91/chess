@@ -277,13 +277,16 @@ const Chess = () => {
 
   return (
     <div>
+      <h1 className="game-title">Chess!</h1>
       <div className="turn-indicator">
         {isWhiteTurn ? 'White Turn' : 'Black Turn'}
-      <div className="chessboard">{renderBoard()}</div>
-      <div className="captured-pieces">
-      {renderCapturedPieces()}
-    </div>
-    </div>
+        <div className="chessboard">
+          {renderBoard()}
+        </div>
+        <div className="captured-pieces">
+        {renderCapturedPieces()}
+        </div>
+      </div>
     </div>
   );
   

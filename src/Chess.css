@@ -5,7 +5,7 @@ html {
   align-items: center;
 }
 
-body {
+.game-title {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -21,13 +21,16 @@ body {
   max-width: 100%;
   min-width: 100%;
   height: auto;
-  max-width: 100%;
-  min-width: 100%;
+  max-height: 100%;
+  min-height: 100%;
   border: 1px solid #000;
   background-color: #f0d9b5;
   position: relative;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
   border-radius: 3px;
+  margin: 20px auto;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
 }
 
 .row {
@@ -47,6 +50,7 @@ body {
   box-sizing: border-box;
   border: 1px solid #837575;
   transition: transform 0.3s, border 0.3s;
+  position: relative;
 }
 
 .selected {
@@ -54,7 +58,7 @@ body {
   box-shadow: 0px 0px 10px rgba(0, 255, 0, 0.5);
 }
 
-.invalid-move {
+.invalid-move:hover {
   background-color: red !important;
   box-shadow: 0px 0px 10px red;
 }
@@ -80,6 +84,10 @@ body {
   color: #000;
   font-weight: bold;
   transition: color 0.3s;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .piece-white {
@@ -95,16 +103,19 @@ body {
   left: 10px;
   font-size: 18px;
   font-weight: bold;
+  background-color: #f9f9f9;
+  padding: 5px 10px;
+  border-radius: 3px;
 }
 
 .captured-pieces {
-  margin-top: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 18px;
   font-weight: bold;
-  background-color: #f9f9f9;
+  margin-top: 20px;
+  background-color: #fff;
   border: 1px solid #ccc;
   padding: 10px;
   border-radius: 5px;
@@ -124,6 +135,8 @@ body {
 .captured-pieces-container {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 5px;
 }
 
 .captured-pieces-section {
@@ -144,6 +157,8 @@ body {
   font-size: 20px;
   margin: 5px;
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+  padding: 3px;
+  background-color: #f9f9f9;
 }
 
 .captured-piece.piece-white {
